@@ -3,8 +3,8 @@ import { createUser, getUser, updateUser, deleteUser } from "../controllers/user
 
 const userRoutes = Router();
 userRoutes.post("/users", createUser);
-userRoutes.get("/users", getUser);
-userRoutes.post("/users", updateUser);
-userRoutes.delete("/users", deleteUser);
+userRoutes.get("/users/:id", getUser);
+userRoutes.post("/users/:id", updateUser);
+userRoutes.delete("/users/:id", deleteUser);
 
 export default userRoutes;

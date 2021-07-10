@@ -8,19 +8,19 @@ const createUser = (req, res) => {
     name: req.body.name,
     address: req.body.address,
     institution: req.body.institution,
-    type: req.body.type
+    type: req.body.type,
   });
-  User.findOne({username: req.body.username}, (err, currentUser) => {
+  User.findOne({ username: req.body.username }, (err, currentUser) => {
     if (err) {
       res.status(500).json();
     } else if (currentUser) {
-      res.status(404).json({error: "User already exists"});
+      res.status(404).json({ error: "User already exists" });
     } else {
       user.save((savedErr, savedUser) => {
         if (savedErr) {
           res.status(500).json();
         } else {
-          res.status(200).json({id: savedUser.id});
+          res.status(200).json({ id: savedUser.id });
         }
       });
     }
@@ -28,16 +28,33 @@ const createUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  console.log("got user");
-  res.status(200).json();
-}
+  User.findById(req.params.id, (err, user) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json(user);
+    }
+  });
+};
 
 const updateUser = (req, res) => {
-  console.log("updated user");
+  User.findByIdAndUpdate(req.params.id, req.body, (err) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json({ message: "User updated" });
+    }
+  });
 };
 
 const deleteUser = (req, res) => {
-  console.log("deleted user");
-}
+  User.findByIdAndDelete(req.params.id, (err) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json({ message: "User sucessfully deleted" });
+    }
+  });
+};
 
 export { createUser, getUser, updateUser, deleteUser };
