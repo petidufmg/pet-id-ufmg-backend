@@ -17,9 +17,8 @@ const petSchema = new Schema(
       type: {
         type: String,
         enum: ["Point"],
-        required: true,
       },
-      coordinates: { type: [Number], required: true,  default: [0,0] },
+      coordinates: { type: [Number],  default: [0,0] },
       required: false
     },
     withdrawalDate: { type: Date, required: false },

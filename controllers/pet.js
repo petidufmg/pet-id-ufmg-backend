@@ -2,39 +2,54 @@ import Pet from "../models/pet.js";
 import Owner from "../models/owner.js";
 
 const createPet = (req, res) => {
-  const pet = new Pet({
-    microchipNumber: req.body.microchipNumber,
-    name: req.body.name,
-    specie: req.body.specie,
-    breed: req.body.breed,
-    coat: req.body.coat,
-    height: req.body.height,
-    age: req.body.age,
-    sex: req.body.sex,
-    microchippingDate: req.body.microchippingDate,
-    captureLocalization: req.body.captureLocalization,
-    withdrawalDate: req.body.withdrawalDate,
-    sterilizationDate: req.body.sterilizationDate,
-    dewormingDates: req.body.dewormingDates,
-    vaccinationDates: req.body.vaccinationDates,
-    adoptionDate: req.body.adoptionDate,
-    deathDate: req.body.deathDate,
-    owner: req.body.owner
+  Owner.findById(req.query.id, (err, owner) => {
+    if (err) {
+      res.status(500).json();
+    } else if (owner) {
+      const body = req.body;
+      Object.assign(body, { owner: owner });
+      Pet.create(body, (petErr, pet) => {
+        if (petErr) {
+          res.status(500).json();
+          console.log(petErr);
+        } else {
+          res.status(200).json(pet);
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Owner not found" });
+    }
   });
-  console.log(pet);
 };
 
 const getPet = (req, res) => {
-  console.log("got pet");
-  res.status(200).json();
-}
+  Pet.findById(req.params.id, (err, pet) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json(pet);
+    }
+  });
+};
 
 const updatePet = (req, res) => {
-  console.log("updated pet");
+  Pet.findByIdAndUpdate(req.params.id, req.body, (err) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json({ message: "Pet successfully updated." });
+    }
+  });
 };
 
 const deletePet = (req, res) => {
-  console.log("deleted pet");
-}
+  Pet.findByIdAndDelete(req.params.id, (err) => {
+    if (err) {
+      res.status(500).json();
+    } else {
+      res.status(200).json({ message: "Pet successfully deleted." });
+    }
+  });
+};
 
 export { createPet, getPet, updatePet, deletePet };
