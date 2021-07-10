@@ -42,7 +42,7 @@ const updateUser = (req, res) => {
     if (err) {
       res.status(500).json();
     } else {
-      res.status(200).json({ message: "User updated" });
+      res.status(200).json({ message: "User successfully updated." });
     }
   });
 };
@@ -52,7 +52,7 @@ const deleteUser = (req, res) => {
     if (err) {
       res.status(500).json();
     } else {
-      res.status(200).json({ message: "User sucessfully deleted" });
+      res.status(200).json({ message: "User sucessfully deleted." });
     }
   });
 };
