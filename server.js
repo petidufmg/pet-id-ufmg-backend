@@ -4,10 +4,12 @@ import mongoose from "mongoose";
 import routes from "./routes/routes.js";
 import passport from "passport";
 import googleStrategy from "passport-google-oauth20";
+import cors from "cors";
 
 dotenv.config();
 const GoogleStrategy = googleStrategy.Strategy;
 const server = express();
+server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({extended: true}));
 
@@ -33,6 +35,6 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-server.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 9000, () => {
   console.log(`listening on port ${process.env.PORT || 3000}`);
 });
