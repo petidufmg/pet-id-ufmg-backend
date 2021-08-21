@@ -13,12 +13,12 @@ server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({extended: true}));
 
-mongoose.connect(`mongodb://${process.env.DIR}/pet-id`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+// mongoose.connect(`mongodb://${process.env.DIR}/pet-id`, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useCreateIndex: true,
+//   useFindAndModify: false,
+// });
 
 server.use("/api/v1/", routes);
 server.use(passport.initialize());
