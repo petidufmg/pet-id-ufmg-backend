@@ -1,10 +1,12 @@
 import Router from "express";
-import { createUser, getUser, updateUser, deleteUser } from "../controllers/user.js";
+import { getUser, updateUser, deleteUser, authenticateWithGoogle, checkTokenIsValid } from "../controllers/user.js";
+import verifyJWT from "../helpers/jwtVerifier.js";
 
 const userRoutes = Router();
-userRoutes.post("/users", createUser);
-userRoutes.get("/users/:id", getUser);
-userRoutes.post("/users/:id", updateUser);
-userRoutes.delete("/users/:id", deleteUser);
+userRoutes.get("/users/:id", verifyJWT, getUser);
+userRoutes.post("/users/:id", verifyJWT, updateUser);
+userRoutes.delete("/users/:id", verifyJWT, deleteUser);
+userRoutes.post("/users/auth/google", authenticateWithGoogle);
+userRoutes.get("/users/isValid", verifyJWT, checkTokenIsValid);
 
 export default userRoutes;

@@ -1,26 +1,26 @@
 import User from "../models/user.js";
+import googleAuth from "google-auth-library";
+import jwt from "jsonwebtoken";
 
-const createUser = (req, res) => {
+const createUser = (data, res) => {
   const user = new User({
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
-    name: req.body.name,
-    address: req.body.address,
-    institution: req.body.institution,
-    type: req.body.type,
+    username: data.username,
+    name: data.name,
+    userId: data.userId,
+    type: data.type,
   });
-  User.findOne({ username: req.body.username }, (err, currentUser) => {
+  User.findOne({ username: user.username }, (err, currentUser) => {
     if (err) {
-      res.status(500).json();
+      res.status(500).json("error in find username");
     } else if (currentUser) {
-      res.status(404).json({ error: "User already exists" });
+      res.status(200).json({ auth: true, token: data.token, id: user.userId, type: user.type });
     } else {
       user.save((savedErr, savedUser) => {
         if (savedErr) {
           res.status(500).json();
         } else {
-          res.status(200).json({ id: savedUser.id });
+          console.log(savedUser);
+          res.status(200).json({ auth: true, token: data.token, id: user.userId, type: user.type });
         }
       });
     }
@@ -28,9 +28,9 @@ const createUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  User.findById(req.params.id, (err, user) => {
+  User.findOne({ userId: req.params.id }, (err, user) => {
     if (err) {
-      res.status(500).json();
+      res.status(500).json("user not found");
     } else {
       res.status(200).json(user);
     }
@@ -38,7 +38,7 @@ const getUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.params.id, req.body, (err) => {
+  User.findOneAndUpdate({ userId: req.params.id }, req.body, (err) => {
     if (err) {
       res.status(500).json();
     } else {
@@ -48,7 +48,7 @@ const updateUser = (req, res) => {
 };
 
 const deleteUser = (req, res) => {
-  User.findByIdAndDelete(req.params.id, (err) => {
+  User.findOneAndDelete({ userId: req.params.id }, (err) => {
     if (err) {
       res.status(500).json();
     } else {
@@ -57,4 +57,38 @@ const deleteUser = (req, res) => {
   });
 };
 
-export { createUser, getUser, updateUser, deleteUser };
+const authenticateWithGoogle = (req, res) => {
+  const { OAuth2Client } = googleAuth;
+  const client = new OAuth2Client(process.env.CLIENT_ID);
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: req.body.credential,
+      audience: process.env.CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const userId = payload["sub"];
+    const email = payload["email"];
+    const firstName = payload["given_name"];
+    const lastName = payload["family_name"];
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+      expiresIn: 300 * 12,
+    });
+    console.log(token);
+    createUser({
+      username: email,
+      name: { firstName: firstName, lastName: lastName },
+      userId: userId,
+      type: 0,
+      token: token
+    }, res);
+    //res.json({ auth: true, token: token });
+  }
+  verify().catch(console.error);
+  // res.status(500).json({ message: "Login inválido"});
+};
+
+const checkTokenIsValid = (req, res) => {
+  res.status(200).json({ message: "ok"});
+};
+
+export { createUser, getUser, updateUser, deleteUser, authenticateWithGoogle, checkTokenIsValid };
