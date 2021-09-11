@@ -9,7 +9,7 @@ const checkUserType = (req, res) => {
     }
     switch (user.type) {
       case 0:
-        res.status(404).json({ message: "User not authorized" });
+        res.status(401).json({ message: "User not authorized" });
         break;
       case 1:
       case 2:
