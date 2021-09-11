@@ -10,30 +10,36 @@ dotenv.config();
 const GoogleStrategy = googleStrategy.Strategy;
 const server = express();
 server.use(cors());
-server.use(express.json({limit: '50mb', extended: true}));
-server.use(express.urlencoded({extended: true}));
+server.use(express.json({ limit: "50mb", extended: true }));
+server.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(`mongodb://${process.env.DIR}/pet-id`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose.connect(
+  `mongodb+srv://admin:${process.env.MONGO_DB_USER_PASSWORD}@cluster0.r3fkj.mongodb.net/pet-id?retryWrites=true&w=majority`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  }
+);
 
 server.use("/api/v1/", routes);
 server.use(passport.initialize());
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/home"
-},
-function(accessToken, refreshToken, profile, cb) {
-  User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    return cb(err, user);
-  });
-}
-));
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/home",
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      User.findOrCreate({ googleId: profile.id }, function (err, user) {
+        return cb(err, user);
+      });
+    }
+  )
+);
 
 server.listen(process.env.PORT || 9000, () => {
   console.log(`listening on port ${process.env.PORT || 3000}`);

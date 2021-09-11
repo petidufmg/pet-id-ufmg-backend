@@ -13,7 +13,7 @@ const createUser = (data, res) => {
     if (err) {
       res.status(500).json("error in find username");
     } else if (currentUser) {
-      res.status(200).json({ auth: true, token: data.token, id: user.userId, type: user.type });
+      res.status(200).json({ auth: true, token: data.token, id: currentUser.userId, type: currentUser.type });
     } else {
       user.save((savedErr, savedUser) => {
         if (savedErr) {

@@ -3,7 +3,7 @@ import User from "../models/user.js";
 import Owner from "../models/owner.js";
 
 const checkUserType = (req, res) => {
-  User.findOne({ userId: req.headers["user-type"] }, (err, user) => {
+  User.findOne({ userId: req.headers["user-id"] }, (err, user) => {
     if (err) {
       res.status(500).json({ message: "error in server" });
     }
@@ -16,18 +16,19 @@ const checkUserType = (req, res) => {
       case 3:
         break;
       default:
-        res.status(404).json({ message: "User not authorized" });
+        res.status(401).json({ message: "User not authorized" });
     }
   });
 };
 
 const checkUserTypeForOwnerRGandCPF = (req, res) => {
-  User.findOne({ userId: req.headers["user-type"] }, (err, user) => {
+  User.findOne({ userId: req.headers["user-id"] }, (err, user) => {
     if (err) {
       res.status(500).json({ message: "error in server" });
-    }
-    if (user.type !== 3) {
-      res.status(404).json({ message: "User not authorized" });
+    } else if (user) {
+      if (user.type !== 3) {
+        res.status(401).json({ message: "User not authorized" });
+      }
     }
   });
 };
