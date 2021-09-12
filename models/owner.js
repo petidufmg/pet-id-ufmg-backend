@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import findOrCreate from "mongoose-findorcreate";
 
 const { Schema } = mongoose;
 
@@ -13,6 +14,7 @@ const ownerSchema = new Schema(
   { timestamps: true }
 );
 
+ownerSchema.plugin(findOrCreate);
 const Owner = mongoose.model("Owner", ownerSchema);
 
 export default Owner;

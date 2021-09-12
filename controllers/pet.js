@@ -1,6 +1,7 @@
 import Pet from "../models/pet.js";
 import User from "../models/user.js";
 import Owner from "../models/owner.js";
+import findOrCreate from "mongoose-findorcreate";
 
 const checkUserType = (req, res) => {
   User.findOne({ userId: req.headers["user-id"] }, (err, user) => {
@@ -99,13 +100,32 @@ const getPetWithOwnerRGAndCPF = (req, res) => {
     });
 };
 
+const savePetOrOwner = (req, res, pet) => {
+  Owner.findOrCreate({ cpf: req.body.owner.cpf }, req.body.owner, (ownerErr, owner) => {
+      if (ownerErr) { res.status(500).json(); } 
+      else {
+        Object.assign(pet, req.body); 
+        pet.owner = owner;
+        pet.save((petSaveErr) => {
+          if (petSaveErr) {
+            res.status(500).json();
+          } else {
+            res.status(200).json({ message: "Pet successfully updated." });
+          }
+        });
+      }
+    }
+  );
+};
+
 const updatePet = (req, res) => {
   checkUserType(req, res);
-  Pet.findOneAndUpdate({ microchipNumber: req.params.id }, req.body, (err) => {
+  Pet.findOne({ microchipNumber: req.params.id }, (err, pet) => {
     if (err) {
       res.status(500).json();
+      console.log(err);
     } else {
-      res.status(200).json({ message: "Pet successfully updated." });
+      savePetOrOwner(req, res, pet);
     }
   });
 };

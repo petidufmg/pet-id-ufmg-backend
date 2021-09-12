@@ -7,7 +7,7 @@ petRoutes.post("/pets", verifyJWT, createPet);
 petRoutes.get("/pets/:id", verifyJWT, getPet);
 petRoutes.get("/pets/:id/owner", verifyJWT, getPetWithOwner);
 petRoutes.get("/pets/:id/owner-full", verifyJWT, getPetWithOwnerRGAndCPF);
-petRoutes.post("/pets/:id", verifyJWT, updatePet);
+petRoutes.patch("/pets/:id", verifyJWT, updatePet);
 petRoutes.delete("/pets/:id", verifyJWT, deletePet);
 
 export default petRoutes;
